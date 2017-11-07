@@ -171,8 +171,11 @@ func main() {
     ClearLine()
 
     fmt.Print("Available classes: \n")
-    for _, i := range charclasses {
-        fmt.Print(i.name, " ")
+    for index, i := range charclasses {
+        fmt.Print("#", (index + 1), ": ", i.name)
+        if index != len(charclasses) - 1 {
+            fmt.Print("\n")
+        }
     }
     fmt.Print("\n")
     ClearLine()

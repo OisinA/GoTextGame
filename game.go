@@ -7,17 +7,20 @@ import (
     "strings"
 )
 
+//This struct stores the information about the character's class.
 type CharClass struct {
     name string
     dmgmodifier float64
 }
 
+//This struct stores the name, class and health of the player.
 type Player struct {
     name string
     class CharClass
     health int
 }
 
+//This struct stores the name, difficulty and health of the enemy.
 type Enemy struct {
     name string
     difficulty int
@@ -27,25 +30,32 @@ type Enemy struct {
 var player Player
 var enemy Enemy
 
+//Player method to damage the player.
 func (p *Player) Damage(damage int) {
     p.health = p.health - damage
 }
 
+//Enemy method to damage the enemy.
 func (e *Enemy) Damage(damage int) {
     e.health = e.health - damage
 }
 
+//Player method allowing the player to attack the enemy for a certain amount of damage.
 func (p Player) Attack(enemy *Enemy, damage int) {
     enemy.Damage(damage)
     fmt.Print("You damaged the enemy for ", damage, " damage.\n")
 }
 
+//Parse the user's inputted action and convert it to the appropriate method.
 func (p *Player) ParseAction(action string) {
-    if action == "attack" {
-        p.Attack(&enemy, 3)
+    switch(action) {
+        case "attack" {
+            p.attack(&enemy, 3)
+        }
     }
 }
 
+//Print a line of the - character to break up the text.
 func ClearLine() {
     for i := 0; i < 34; i++ {
       fmt.Print("-")
@@ -53,14 +63,17 @@ func ClearLine() {
     fmt.Print("\n")
 }
 
+//Display the user's name and class to the user.
 func (p Player) DisplayName() {
     fmt.Print("You are playing as ", p.name, " the ", p.class.name, ".\n")
 }
 
+//This function returns whether either the player or enemy are dead.
 func CheckHealth() bool {
     return player.health <= 0 || enemy.health <= 0
 }
 
+//This function is called when the game is over. It prints out the ending messages.
 func EndGame() {
     phealth := player.health
     ehealth := enemy.health
@@ -80,6 +93,7 @@ func EndGame() {
 
 var terminate = false
 
+//Main function of the game.
 func main() {
 
     reader := bufio.NewReader(os.Stdin)
@@ -99,6 +113,7 @@ func main() {
 
     fmt.Print("You stumble across a ", enemy.name, ".\n")
 
+    //Main for loop of the game. Continues until the 'terminate' variable is true.
     for {
         if terminate {
             EndGame()

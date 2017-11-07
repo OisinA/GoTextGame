@@ -27,8 +27,10 @@ type Enemy struct {
     health int
 }
 
-var player Player
-var enemy Enemy
+var (
+    player Player
+    enemy Enemy
+)
 
 //Player method to damage the player.
 func (p *Player) Damage(damage int) {
@@ -40,6 +42,11 @@ func (e *Enemy) Damage(damage int) {
     e.health = e.health - damage
 }
 
+func (e Enemy) Attack(player *Player, damage int) {
+    player.Damage(damage)
+    fmt.Print("The zombie damaged you for ", damage, " damage.\n")
+}
+
 //Player method allowing the player to attack the enemy for a certain amount of damage.
 func (p Player) Attack(enemy *Enemy, damage int) {
     enemy.Damage(damage)
@@ -49,9 +56,8 @@ func (p Player) Attack(enemy *Enemy, damage int) {
 //Parse the user's inputted action and convert it to the appropriate method.
 func (p *Player) ParseAction(action string) {
     switch(action) {
-        case "attack" {
-            p.attack(&enemy, 3)
-        }
+        case "attack":
+            p.Attack(&enemy, 3)
     }
 }
 
@@ -91,6 +97,46 @@ func EndGame() {
     }
 }
 
+//Main for loop of the game. Continues until the 'terminate' variable is true.
+func GameLoop() {
+    reader := bufio.NewReader(os.Stdin)
+    turn := 1
+    for {
+        if terminate {
+            EndGame()
+            break
+        }
+
+        fmt.Print("Turn #", turn, "\n")
+        fmt.Print("What do you do?\n> ")
+
+        action, _ := reader.ReadString('\n')
+        action = action[:len(action) - 2]
+        action = strings.ToLower(action)
+        ClearLine()
+
+        validActions := map[string]bool {
+            "attack": true,
+            "flee": true,
+        }
+
+        if validActions[action] {
+            player.ParseAction(action)
+        } else {
+            continue
+        }
+
+        enemy.Attack(&player, 2)
+
+        fmt.Print("You have ", player.health, " health remaining.\n")
+        fmt.Print("The enemy has ", enemy.health, " health remaining.\n")
+        ClearLine()
+
+        terminate = CheckHealth()
+        turn = turn + 1
+    }
+}
+
 var terminate = false
 
 //Main function of the game.
@@ -113,37 +159,7 @@ func main() {
 
     fmt.Print("You stumble across a ", enemy.name, ".\n")
 
-    //Main for loop of the game. Continues until the 'terminate' variable is true.
-    for {
-        if terminate {
-            EndGame()
-            break
-        }
-
-        fmt.Print("What do you do?\n> ")
-
-        action, _ := reader.ReadString('\n')
-        action = action[:len(action) - 2]
-        action = strings.ToLower(action)
-        ClearLine()
-
-        validActions := map[string]bool {
-            "attack": true,
-            "flee": true,
-        }
-
-        if validActions[action] {
-              player.ParseAction(action)
-        } else {
-              continue
-        }
-
-        fmt.Print("You have ", player.health, " health remaining.\n")
-        fmt.Print("The enemy has ", enemy.health, " health remaining.\n")
-        ClearLine()
-
-        terminate = CheckHealth()
-    }
+    GameLoop()
 
     ClearLine()
 

@@ -5,6 +5,8 @@ import (
     "fmt"
     "os"
     "strings"
+    "math/rand"
+    "time"
 )
 
 //This struct stores the information about the character's class.
@@ -50,8 +52,13 @@ func (e *Enemy) Damage(damage int) {
 
 func (e Enemy) Attack(player *Player, damage int) {
     damage = damage * e.difficulty
-    player.Damage(damage)
-    fmt.Print("The zombie damaged you for ", damage, " damage.\n")
+    damageModified := float64(damage) * player.class.dmgmodifier
+    if damageModified != 1.0 {
+        fmt.Print("You are taking ", (player.class.dmgmodifier * 100), "% damage.\n")
+        fmt.Print("You would've taken ", damage, " damage.\n")
+    }
+    player.Damage(int(damageModified))
+    fmt.Print("The zombie damaged you for ", int(damageModified), " damage.\n")
 }
 
 //Player method allowing the player to attack the enemy for a certain amount of damage.
@@ -64,7 +71,7 @@ func (p Player) Attack(enemy *Enemy, damage int) {
 func (p *Player) ParseAction(action string) {
     switch(action) {
         case "attack":
-            p.Attack(&enemy, 3)
+            p.Attack(&enemy, GenRandomNumber(p.class.maxdmg))
     }
 }
 
@@ -74,6 +81,11 @@ func ClearLine() {
       fmt.Print("-")
     }
     fmt.Print("\n")
+}
+
+func GenRandomNumber(max int) int {
+    rand.Seed(time.Now().Unix())
+    return rand.Intn(max) + 1
 }
 
 //Display the user's name and class to the user.
@@ -132,7 +144,9 @@ func GameLoop() {
             continue
         }
 
-        enemy.Attack(&player, 2)
+        fmt.Print("\n")
+        enemy.Attack(&player, GenRandomNumber(enemy.difficulty * 4))
+        fmt.Print("\n")
 
         fmt.Print("You have ", player.health, " health remaining.\n")
         fmt.Print("The enemy has ", enemy.health, " health remaining.\n")

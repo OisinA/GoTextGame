@@ -105,12 +105,12 @@ func EndGame() {
 
     fmt.Print("The game is over.\n")
 
-    if(phealth <= 0) {
+    if phealth <= 0 {
         fmt.Print("You have died! Unfortunate.\n")
         return
     }
 
-    if(ehealth <= 0) {
+    if ehealth <= 0 {
         fmt.Print("You have slain the ", enemy.name, "!\n")
         return
     }

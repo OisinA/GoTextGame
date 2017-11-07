@@ -10,6 +10,7 @@ import (
 //This struct stores the information about the character's class.
 type CharClass struct {
     name string
+    maxdmg int
     dmgmodifier float64
 }
 
@@ -32,6 +33,11 @@ var (
     enemy Enemy
 )
 
+var charclasses = [2]CharClass {
+    {"Barbarian", 5, 0.5},
+    {"Wizard", 8, 1.0},
+}
+
 //Player method to damage the player.
 func (p *Player) Damage(damage int) {
     p.health = p.health - damage
@@ -43,6 +49,7 @@ func (e *Enemy) Damage(damage int) {
 }
 
 func (e Enemy) Attack(player *Player, damage int) {
+    damage = damage * e.difficulty
     player.Damage(damage)
     fmt.Print("The zombie damaged you for ", damage, " damage.\n")
 }
@@ -100,6 +107,10 @@ func EndGame() {
 //Main for loop of the game. Continues until the 'terminate' variable is true.
 func GameLoop() {
     reader := bufio.NewReader(os.Stdin)
+    validActions := map[string]bool {
+        "attack": true,
+        "flee": true,
+    }
     turn := 1
     for {
         if terminate {
@@ -114,11 +125,6 @@ func GameLoop() {
         action = action[:len(action) - 2]
         action = strings.ToLower(action)
         ClearLine()
-
-        validActions := map[string]bool {
-            "attack": true,
-            "flee": true,
-        }
 
         if validActions[action] {
             player.ParseAction(action)
@@ -149,7 +155,35 @@ func main() {
     text, _ := reader.ReadString('\n')
     text = text[:len(text) - 2]
     ClearLine()
-    player = Player{text, CharClass{"Wizard", 0.25}, 20}
+
+    fmt.Print("Available classes: \n")
+    for _, i := range charclasses {
+        fmt.Print(i.name, " ")
+    }
+    fmt.Print("\n")
+    ClearLine()
+
+    classPicked := false
+    var charClass CharClass
+    for {
+        if classPicked {
+            break
+        }
+
+        fmt.Print("Which class would you like to play?\n> ")
+
+        class, _ := reader.ReadString('\n')
+        class = class[:len(class) - 2]
+        class = strings.ToLower(class)
+        for _, i := range charclasses {
+            if class == strings.ToLower(i.name) {
+                charClass = i
+                classPicked = true
+            }
+        }
+    }
+
+    player = Player{text, charClass, 20}
 
     player.DisplayName()
 

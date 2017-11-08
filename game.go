@@ -54,17 +54,17 @@ func (e Enemy) Attack(player *Player, damage int) {
     damage = damage * e.difficulty
     damageModified := float64(damage) * player.class.dmgmodifier
     if damageModified != 1.0 {
-        fmt.Print("You are taking ", (player.class.dmgmodifier * 100), "% damage.\n")
-        fmt.Print("You would've taken ", damage, " damage.\n")
+        fmt.Println("You are taking ", (player.class.dmgmodifier * 100), "% damage.")
+        fmt.Println("You would've taken ", damage, " damage.")
     }
     player.Damage(int(damageModified))
-    fmt.Print("The zombie damaged you for ", int(damageModified), " damage.\n")
+    fmt.Println("The zombie damaged you for ", int(damageModified), " damage.")
 }
 
 //Player method allowing the player to attack the enemy for a certain amount of damage.
 func (p Player) Attack(enemy *Enemy, damage int) {
     enemy.Damage(damage)
-    fmt.Print("You damaged the enemy for ", damage, " damage.\n")
+    fmt.Println("You damaged the enemy for ", damage, " damage.")
 }
 
 //Parse the user's inputted action and convert it to the appropriate method.
@@ -80,7 +80,7 @@ func ClearLine() {
     for i := 0; i < 34; i++ {
       fmt.Print("-")
     }
-    fmt.Print("\n")
+    fmt.Println("")
 }
 
 func GenRandomNumber(max int) int {
@@ -90,7 +90,7 @@ func GenRandomNumber(max int) int {
 
 //Display the user's name and class to the user.
 func (p Player) DisplayName() {
-    fmt.Print("You are playing as ", p.name, " the ", p.class.name, ".\n")
+    fmt.Println("You are playing as ", p.name, " the ", p.class.name, ".")
 }
 
 //This function returns whether either the player or enemy are dead.
@@ -103,15 +103,15 @@ func EndGame() {
     phealth := player.health
     ehealth := enemy.health
 
-    fmt.Print("The game is over.\n")
+    fmt.Println("The game is over.")
 
     if phealth <= 0 {
-        fmt.Print("You have died! Unfortunate.\n")
+        fmt.Println("You have died! Unfortunate.")
         return
     }
 
     if ehealth <= 0 {
-        fmt.Print("You have slain the ", enemy.name, "!\n")
+        fmt.Println("You have slain the ", enemy.name, "!")
         return
     }
 }
@@ -130,7 +130,7 @@ func GameLoop() {
             break
         }
 
-        fmt.Print("Turn #", turn, "\n")
+        fmt.Println("Turn #", turn)
         fmt.Print("What do you do?\n> ")
 
         action, _ := reader.ReadString('\n')
@@ -144,12 +144,12 @@ func GameLoop() {
             continue
         }
 
-        fmt.Print("\n")
+        fmt.Println("")
         enemy.Attack(&player, GenRandomNumber(enemy.difficulty * 4))
-        fmt.Print("\n")
+        fmt.Println("")
 
-        fmt.Print("You have ", player.health, " health remaining.\n")
-        fmt.Print("The enemy has ", enemy.health, " health remaining.\n")
+        fmt.Println("You have ", player.health, " health remaining.")
+        fmt.Println("The enemy has ", enemy.health, " health remaining.")
         ClearLine()
 
         terminate = CheckHealth()
@@ -170,14 +170,14 @@ func main() {
     text = text[:len(text) - 2]
     ClearLine()
 
-    fmt.Print("Available classes: \n")
+    fmt.Println("Available classes: ")
     for index, i := range charclasses {
         fmt.Print("#", (index + 1), ": ", i.name)
         if index != len(charclasses) - 1 {
-            fmt.Print("\n")
+            fmt.Println("")
         }
     }
-    fmt.Print("\n")
+    fmt.Println("")
     ClearLine()
 
     classPicked := false
@@ -208,7 +208,7 @@ func main() {
 
     ClearLine()
 
-    fmt.Print("You stumble across a ", enemy.name, ".\n")
+    fmt.Println("You stumble across a ", enemy.name, ".")
 
     GameLoop()
 
